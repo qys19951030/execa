@@ -1101,9 +1101,25 @@ _Default:_ `0`
 
 If `timeout` is greater than `0`, the subprocess will be [terminated](#optionskillsignal) if it runs for longer than that amount of milliseconds.
 
+The subprocess can be given some time to exit gracefully before being forcefully terminated, using the [`gracefulTimeout`](#optionsgracefultimeout) option.
+
 On timeout, [`error.timedOut`](#errortimedout) becomes `true`.
 
 [More info.](termination.md#timeout)
+
+### options.gracefulTimeout
+
+_Type:_ `number`
+
+When the [`timeout`](#optionstimeout) option is used, give the subprocess some time to exit gracefully before forcefully terminating it.
+
+On timeout, a `SIGTERM` signal is sent to the subprocess. If the subprocess is still alive after `gracefulTimeout` milliseconds, it is forcefully terminated with `SIGKILL`, and [`error.isForcefullyTerminated`](#errorisforcefullyterminated) becomes `true`.
+
+On Windows, which has no `SIGTERM`, [`taskkill`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/taskkill) is used to request a graceful termination instead. If the subprocess does not comply, it is still forcefully terminated after `gracefulTimeout` milliseconds.
+
+This option has no effect unless the [`timeout`](#optionstimeout) option is set. It cannot be used with [synchronous methods](#execasyncfile-arguments-options).
+
+[More info.](termination.md#graceful-timeout)
 
 ### options.cancelSignal
 

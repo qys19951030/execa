@@ -140,6 +140,28 @@ try {
 }
 ```
 
+### Graceful timeout
+
+By default, a subprocess that [times out](#execution-timeout) is terminated right away. The [`gracefulTimeout`](api.md#optionsgracefultimeout) option instead gives it some time to clean up first: close database connections, flush buffered data, finish ongoing requests, etc.
+
+On timeout, a [`SIGTERM` signal](#sigterm) is sent to the subprocess. If the subprocess is still alive after `gracefulTimeout` milliseconds, it is forcefully terminated with [`SIGKILL`](#sigkill), and [`error.isForcefullyTerminated`](api.md#errorisforcefullyterminated) becomes `true`.
+
+```js
+try {
+	await execa({timeout: 5000, gracefulTimeout: 1000})`npm run build`;
+} catch (error) {
+	if (error.timedOut) {
+		console.error(error.isForcefullyTerminated
+			? 'Timed out and did not exit gracefully.'
+			: 'Timed out and exited gracefully.');
+	}
+
+	throw error;
+}
+```
+
+On Windows, which has no `SIGTERM`, [`taskkill`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/taskkill) is used to request a graceful termination instead. If the subprocess does not comply, it is still forcefully terminated after `gracefulTimeout` milliseconds.
+
 ### Inactivity timeout
 
 To terminate a subprocess when it becomes inactive, the [`cancelSignal`](#canceling) option can be combined with [transforms](transform.md) and some [debouncing logic](https://github.com/sindresorhus/debounce-fn). The following example terminates the subprocess if it has not printed to [`stdout`](api.md#resultstdout)/[`stderr`](api.md#resultstderr) in the last minute.

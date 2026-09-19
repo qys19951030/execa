@@ -258,6 +258,19 @@ export type CommonOptions<
 	readonly timeout?: number;
 
 	/**
+	When the `timeout` option is used, give the subprocess some time to exit gracefully before forcefully terminating it.
+
+	On timeout, a `SIGTERM` signal is sent to the subprocess. If the subprocess is still alive after `gracefulTimeout` milliseconds, it is forcefully terminated with `SIGKILL`, and `error.isForcefullyTerminated` becomes `true`.
+
+	On Windows, which has no `SIGTERM`, `taskkill` is used to request a graceful termination instead.
+
+	This option has no effect unless the `timeout` option is set. It cannot be used with synchronous methods.
+
+	@default undefined
+	*/
+	readonly gracefulTimeout?: Unless<IsSync, number>;
+
+	/**
 	When the `cancelSignal` is [aborted](https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort), terminate the subprocess using a `SIGTERM` signal.
 
 	When aborted, `error.isCanceled` becomes `true`.

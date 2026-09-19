@@ -364,6 +364,20 @@ const url = 'https://example.com/build/info';
 const response = await fetch(url, {signal: cancelSignal});
 ```
 
+#### Graceful timeout
+
+```js
+// main.js
+import {execa} from 'execa';
+
+// On timeout, send `SIGTERM` and wait up to 1 second for the subprocess
+// to clean up (close connections, flush buffers, etc.) before forcefully
+// terminating it with `SIGKILL`.
+await execa({timeout: 5000, gracefulTimeout: 1000})`build.js`;
+```
+
+[More info.](docs/termination.md#graceful-timeout)
+
 ### Debugging
 
 #### Detailed error
