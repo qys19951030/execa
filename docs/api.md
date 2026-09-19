@@ -1103,7 +1103,24 @@ If `timeout` is greater than `0`, the subprocess will be [terminated](#optionski
 
 On timeout, [`error.timedOut`](#errortimedout) becomes `true`.
 
+If the [`gracefulTimeout`](#optionsgracefultimeout) option is set, the subprocess is first asked to terminate gracefully, and is forcefully terminated only once `gracefulTimeout` expires.
+
 [More info.](termination.md#timeout)
+
+### options.gracefulTimeout
+
+_Type:_ `number`\
+_Default:_ `0`
+
+When the [`timeout`](#optionstimeout) option is set, give the subprocess some time to terminate gracefully on timeout: a `SIGTERM` signal is sent first, then a `SIGKILL` signal is sent if the subprocess is still alive after `gracefulTimeout` milliseconds.
+
+This lets the subprocess clean up before exiting, e.g. close database connections, flush buffered data or finish ongoing requests.
+
+On Windows, there is no `SIGTERM` signal, so `taskkill` is used instead to ask the subprocess to terminate gracefully. If the subprocess does not comply, it is still forcefully terminated once `gracefulTimeout` expires.
+
+When the subprocess had to be forcefully terminated, [`error.isForcefullyTerminated`](#errorisforcefullyterminated) becomes `true`.
+
+[More info.](termination.md#graceful-timeout)
 
 ### options.cancelSignal
 

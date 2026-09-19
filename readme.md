@@ -364,6 +364,18 @@ const url = 'https://example.com/build/info';
 const response = await fetch(url, {signal: cancelSignal});
 ```
 
+### Termination
+
+#### Graceful timeout
+
+```js
+import {execa} from 'execa';
+
+// On timeout, send `SIGTERM` first, then `SIGKILL`
+// if the subprocess is still alive after 1 second
+await execa({timeout: 5000, gracefulTimeout: 1000})`npm run build`;
+```
+
 ### Debugging
 
 #### Detailed error

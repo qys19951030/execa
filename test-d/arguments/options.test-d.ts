@@ -163,6 +163,11 @@ execaSync('unicorns', {timeout: 1000});
 expectError(await execa('unicorns', {timeout: '1000'}));
 expectError(execaSync('unicorns', {timeout: '1000'}));
 
+await execa('unicorns', {gracefulTimeout: 1000});
+expectError(execaSync('unicorns', {gracefulTimeout: 1000}));
+expectError(await execa('unicorns', {gracefulTimeout: '1000'}));
+expectError(execaSync('unicorns', {gracefulTimeout: '1000'}));
+
 await execa('unicorns', {maxBuffer: 1000});
 execaSync('unicorns', {maxBuffer: 1000});
 await execa('unicorns', {maxBuffer: 1000});
